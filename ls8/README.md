@@ -21,8 +21,8 @@ then prints it out:
 # print8.ls8: Print the number 8 on the screen
 
 10000010 # LDI R0,8
-00000000
-00001000
+00000000 # register address[0]
+00001000 # register[0] = 8
 01000111 # PRN R0
 00000000
 00000001 # HLT
@@ -60,6 +60,38 @@ but you'll have to implement those three above instructions first!
 ## Step 0: IMPORTANT: inventory what is here!
 
 * Make a list of files here.
+
+  |File| Description | Code|Link |
+  |:---|:------------|:-----|:---
+  |/examples|selection of exectuable files to be run by ls8|[Here](ls8\examples)|
+  |call|||
+  |interrupt|||
+  |keyboard|||
+  |mult|||
+  |print8|Print the number 8 on the screen||
+  |printstr|||
+  |sctest|||
+  |stack|||
+  |stackoverflow|||
+
+* Code Block
+  |ABBRV.|Name|Code|Description|LOC|
+  |:---|:---|:----|:--|:--
+  |LDI|Load|10000010| Select Reg, Add Val, inc +3|call, interrupt|
+  |PRN|Print|01000111| that prints the numeric value stored in a |call, |
+  |HLT|Halt|00000001| halt the CPU and exit the emulator.
+  |MULT2PRINT||00011000||call|
+  |Call R1||01010000| in call, prints R1?????
+  |RET|Return|00010001 ||call|
+  |ST||||interrupt, keyboard|
+  |LOOP||||interrupt, keyboard|
+  |JMP||||interrupt|
+  |PRA||||interrupt, keyboard|
+  |IRET||||interrupt, keyboard|
+  |INTHANDLER|||interrupt, keyboard|
+  
+
+
 * Write a short 3-10-word description of what each file does.
 * Note what has been implemented, and what hasn't.
 * Read this whole file.

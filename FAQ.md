@@ -63,7 +63,7 @@
 
 ## Questions
 
-<a name="q100"></a>
+<a name="#q100"></a>
 ### How much of the emulator do I need to implement?
 
 As little as possible to get a particular LS-8 program running.
@@ -80,7 +80,7 @@ the `FL` register to work.
 
 ------------------------------------------------------------------------
 
-<a name="q200"></a>
+<a name="#q200"></a>
 ### Once we get the `HLT` instruction, what should the emulator do?
 
 You should exit the emulator.

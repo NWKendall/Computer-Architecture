@@ -5,6 +5,8 @@ spec is correct.
 
 ## ALU ops
 ```
+INS  OPERATION  REG_A    REG_B
+-------------------------------
 ADD  10100000 00000aaa 00000bbb
 SUB  10100001 00000aaa 00000bbb
 MUL  10100010 00000aaa 00000bbb
