@@ -9,6 +9,10 @@ class CPU:
         """Construct a new CPU."""
         self.ram = [0] * 256
         self.pc = 0
+        self.reg = [0] * 8
+        self.LDI = 0b10000010
+        self.PRN = 0b01000111
+        self.HLT = 0b00000001
 
     def load(self):
         """Load a program into memory."""
@@ -29,7 +33,7 @@ class CPU:
 
         for instruction in program:
             self.ram[address] = instruction
-            print(instruction)
+            # print(instruction)
             address += 1
 
 
@@ -63,8 +67,22 @@ class CPU:
         print()
 
     def run(self):
-        """Run the CPU."""
-        pass
+        """Run the CPU.
+        
+        1. read mem at PC
+        2. store result in local var
+        """
+
+        running = True
+
+        while running:
+            IR = self.ram[self.pc]
+            if IR == self.LDI:
+                self.ldi()
+            if IR == self.PRN:
+                self.prn()           
+            if IR == self.HLT:
+                running = self.hlt()
 
     def ram_read(self, address):
         # accept address
@@ -76,3 +94,18 @@ class CPU:
         # write to address
         # no return
         self.ram[address] = value
+
+    def hlt(self):
+        self.pc += 1
+        return False
+    
+    def prn(self):
+        reg_id = self.ram[self.pc + 1]
+        print(self.reg[reg_id])
+        self.pc +=2
+    
+    def ldi(self):
+        reg_id = self.ram[self.pc + 1]
+        value = self.ram[self.pc + 2]
+        self.reg[reg_id] = value
+        self.pc += 3
