@@ -23,10 +23,18 @@ class CPU:
             self.ram[address] = instruction
             print(address, bin(instruction))
             address += 1
+        # argsv code in here to initiate   
+        # recieving input [python3, file_name, args]
+            #  split
+            # control for strings  
+        # # split
 
 
-    def alu(self, op, reg_a = 0, reg_b = 1):
-        """ALU operations."""
+    def alu(self, op, reg_a, reg_b):
+        """ALU operations.
+        # add masking?
+            use repl
+        """
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
         #elif op == "SUB": etc
@@ -65,6 +73,7 @@ class CPU:
         
         1. read mem at PC
         2. store result in local var
+        3. turn into hash_tables
 
         """
 
@@ -77,7 +86,7 @@ class CPU:
             if IR == self.PRN:
                 self.prn()           
             if IR == self.MUL:
-                self.alu("MUL", 0, 1)
+                self.alu("MUL", 0, 1) # argsv here?
             if IR == self.HLT:
                 running = self.hlt()
 
