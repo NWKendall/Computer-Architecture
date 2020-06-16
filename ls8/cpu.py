@@ -13,38 +13,32 @@ class CPU:
         self.LDI = 0b10000010
         self.PRN = 0b01000111
         self.HLT = 0b00000001
+        self.MUL = 0b10100010
 
-    def load(self):
+    def load(self, program):
         """Load a program into memory."""
-
-        address = 0
-
-        # For now, we've just hardcoded a program:
-
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000, # address 0
-            0b00001000, # store value 8
-            0b01000111, # PRN R0 (i.e. print 8)
-            0b00000000, # ??
-            0b00000001, # HLT
-        ]
-
-        for instruction in program:
+        print("working?")
+        #    index     value        provide from arg
+        for address, instruction in enumerate(program):
             self.ram[address] = instruction
-            # print(instruction)
+            print(address, bin(instruction))
             address += 1
 
 
-    def alu(self, op, reg_a, reg_b):
+    def alu(self, op, reg_a = 0, reg_b = 1):
         """ALU operations."""
-
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
         #elif op == "SUB": etc
+            
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
+            print("REGISTRY:", self.reg)
+            self.pc += 3
+            return self.reg[reg_a]
         else:
-            raise Exception("Unsupported ALU operation")
+            raise Exception(f"Unsupported ALU operation: {op}")
+            self.trace()
 
     def trace(self):
         """
@@ -71,6 +65,7 @@ class CPU:
         
         1. read mem at PC
         2. store result in local var
+
         """
 
         running = True
@@ -81,8 +76,11 @@ class CPU:
                 self.ldi()
             if IR == self.PRN:
                 self.prn()           
+            if IR == self.MUL:
+                self.alu("MUL", 0, 1)
             if IR == self.HLT:
                 running = self.hlt()
+
 
     def ram_read(self, address):
         # accept address
@@ -101,7 +99,9 @@ class CPU:
     
     def prn(self):
         reg_id = self.ram[self.pc + 1]
-        print(self.reg[reg_id])
+        self.reg[0]
+        print("Returning", self.reg[reg_id])
+
         self.pc +=2
     
     def ldi(self):
@@ -109,3 +109,4 @@ class CPU:
         value = self.ram[self.pc + 2]
         self.reg[reg_id] = value
         self.pc += 3
+        
