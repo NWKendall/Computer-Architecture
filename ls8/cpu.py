@@ -2,6 +2,7 @@
 
 import sys
 
+
 class CPU:
     """Main CPU class."""
 
@@ -28,7 +29,6 @@ class CPU:
         self.PUSH = 0b01000101
         self.POP = 0b01000110
 
-
     def load(self, program):
         """Load a program into memory."""
         #    index     value        provide from arg
@@ -44,7 +44,6 @@ class CPU:
         """
 
         self.reg[self.sp] = 0xF3
-        
 
         while self.running is True:
             IR = self.ram[self.pc]
@@ -59,7 +58,7 @@ class CPU:
                 self.MOD: self.mod,
                 self.PUSH: self.push,
                 self.POP: self.pop
-                }
+            }
             if IR in branch_table:
                 branch_table[IR]()
             else:
@@ -80,7 +79,7 @@ class CPU:
         elif op == "SUB":
             self.reg[reg_a] -= self.reg[reg_b]
             self.pc += 3
-            print(f"MUL at REG[{reg_a}]: {self.reg[reg_a]}")          
+            print(f"MUL at REG[{reg_a}]: {self.reg[reg_a]}")
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
             self.pc += 3
@@ -105,8 +104,8 @@ class CPU:
 
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
-            #self.fl,
-            #self.ie,
+            # self.fl,
+            # self.ie,
             self.ram_read(self.pc),
             self.ram_read(self.pc + 1),
             self.ram_read(self.pc + 2)
@@ -116,7 +115,6 @@ class CPU:
             print(" %02X" % self.reg[i], end='')
 
         print()
-
 
     def ram_read(self, address):
         # accept address
@@ -132,13 +130,13 @@ class CPU:
     def hlt(self):
         self.running = False
         self.pc += 1
-    
+
     def prn(self):
         reg_id = self.ram[self.pc + 1]
         self.reg[reg_id]
         print("Returning", self.reg[reg_id])
-        self.pc +=2
-    
+        self.pc += 2
+
     def ldi(self):
         reg_id = self.ram[self.pc + 1]
         value = self.ram[self.pc + 2]
@@ -148,7 +146,7 @@ class CPU:
 
     def add(self):
         self.alu("ADD", 0, 1)
-    
+
     def sub(self):
         self.alu("SUB", 0, 1)
 
@@ -159,36 +157,34 @@ class CPU:
         self.alu("DIV", 0, 1)
 
     def mod(self):
-            self.alu("MOD", 0, 1)
-    
+        self.alu("MOD", 0, 1)
+
     def push(self):
         # self.reg[7] = 104 reg 0 - 8
-        self.reg[self.sp] -= 1 #?? ram[105] = 404
-        print("PC", self.pc)
-
+        self.reg[self.sp] -= 1  # ?? ram[105] = 404
         reg_id = self.ram[self.pc + 1]
         # value = new ram index after stack push
         value = self.reg[reg_id]
-
         top_loc = self.reg[self.sp]
         self.ram[top_loc] = value
-        # print("RAM:", self.ram)
-        # print("REG:", self.reg)
+        print("PC:", self.pc)
+        print("RAM:", self.ram)
+        print("REG:", self.reg)
         # print("PUSH", "Reg_LOC:", self.sp , "Ram_Loc:",  reg_id, "Val:", self.ram[top_loc])
         self.pc += 2
-    
+
     def pop(self):
-        self.reg[self.sp] += 1
+        # OLD Head
+        top_loc = self.reg[self.sp] #244
+        # lets get the register address
+
+        # NEW HEAD
         reg_id = self.ram[self.pc + 1]
-        value = self.reg[reg_id]
-        top_loc = self.reg[self.sp]
-        self.ram[top_loc] = value
-        # print("POP RAM:", self.ram)
-        # print("REG:", self.reg)
-        # print("PUSH", "Reg_LOC:", self.sp , "Ram_Loc:",  reg_id, "Val:", self.ram[top_loc])
+        # overwrite our reg address with the value of our memory address we are looking at
+        self.reg[reg_id] = self.ram[top_loc]
+
+        self.reg[self.sp] += 1 #243
         self.pc += 2
-
-
 
 
 """
