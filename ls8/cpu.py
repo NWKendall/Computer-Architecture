@@ -10,6 +10,7 @@ class CPU:
         self.ram = [0] * 256
         self.pc = 0
         self.reg = [0] * 8
+        self.running = True
         self.LDI = 0b10000010
         self.PRN = 0b01000111
         self.HLT = 0b00000001
@@ -28,6 +29,29 @@ class CPU:
             #  split
             # control for strings  
         # # split
+
+    def run(self):
+        """Run the CPU.       
+        1. read mem at PC
+        2. store result in local var
+        3. turn into hash_tables
+        """
+        
+        while self.running is True:
+            IR = self.ram[self.pc]
+            branch_table = {
+                self.LDI: self.ldi,
+                self.PRN: self.prn,
+                self.HLT: self.hlt,
+                self.MUL: self.mul
+                }
+            if IR in branch_table:
+                branch_table[IR]()
+            # elif IR == self.HLT:
+            #     running = False
+            else:
+                print(f'Unknown instruction: {IR}, at address PC: {self.pc}')
+                sys.exit(1)
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations.
@@ -69,28 +93,6 @@ class CPU:
 
         print()
 
-    def run(self):
-        """Run the CPU.       
-        1. read mem at PC
-        2. store result in local var
-        3. turn into hash_tables
-        """
-        running = True
-        while running:
-            IR = self.ram[self.pc]
-            branch_table = {
-                self.LDI: self.ldi,
-                self.PRN: self.prn,
-                # self.HLT: self.hlt,
-                self.MUL: self.mul
-                }
-            if IR in branch_table:
-                branch_table[IR]()
-            elif IR == self.HLT:
-                running = False
-            else:
-                print(f'Unknown instruction: {IR}, at address PC: {self.pc}')
-                sys.exit(1)
 
     def ram_read(self, address):
         # accept address
@@ -103,10 +105,10 @@ class CPU:
         # no return
         self.ram[address] = value
 
-    def hlt(self, running):
+    def hlt(self):
+        self.running = False
         self.pc += 1
-        running = False
-        return running
+
     
     def prn(self):
         reg_id = self.ram[self.pc + 1]
