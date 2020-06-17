@@ -14,21 +14,15 @@ class CPU:
         self.LDI = 0b10000010
         self.PRN = 0b01000111
         self.HLT = 0b00000001
+        self.ADD = 0b10100000
         self.MUL = 0b10100010
 
     def load(self, program):
         """Load a program into memory."""
-        print("working?")
         #    index     value        provide from arg
         for address, instruction in enumerate(program):
             self.ram[address] = instruction
-            print(address, bin(instruction))
             address += 1
-        # argsv code in here to initiate   
-        # recieving input [python3, file_name, args]
-            #  split
-            # control for strings  
-        # # split
 
     def run(self):
         """Run the CPU.       
@@ -43,15 +37,15 @@ class CPU:
                 self.LDI: self.ldi,
                 self.PRN: self.prn,
                 self.HLT: self.hlt,
-                self.MUL: self.mul
+                self.ADD: self.add,
+                self.MUL: self.mul,
                 }
             if IR in branch_table:
                 branch_table[IR]()
-            # elif IR == self.HLT:
-            #     running = False
             else:
                 print(f'Unknown instruction: {IR}, at address PC: {self.pc}')
                 sys.exit(1)
+            # branch_table.get(IR)()
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations.
@@ -61,6 +55,8 @@ class CPU:
         """
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
+            self.pc += 3
+            print(f"MUL at REG[{reg_a}]: {self.reg[reg_a]}")
         #elif op == "SUB": etc
             
         elif op == "MUL":
@@ -121,6 +117,9 @@ class CPU:
         value = self.ram[self.pc + 2]
         self.reg[reg_id] = value
         self.pc += 3
-    
+
+    def add(self):
+        self.alu("ADD", 0, 1)
+        
     def mul(self):
         self.alu("MUL", 0, 1)
