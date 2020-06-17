@@ -29,9 +29,9 @@ class CPU:
             # control for strings  
         # # split
 
-
     def alu(self, op, reg_a, reg_b):
         """ALU operations.
+        Algorythmic Logic Units
         # add masking?
             use repl
         """
@@ -41,9 +41,10 @@ class CPU:
             
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
-            print("REGISTRY:", self.reg)
+            # print("REGISTRY:", self.reg)
             self.pc += 3
-            return self.reg[reg_a]
+            # print("MUL", self.reg[reg_a])
+            print(f"MUL at REG[{reg_a}]: {self.reg[reg_a]}")
         else:
             raise Exception(f"Unsupported ALU operation: {op}")
             self.trace()
@@ -69,27 +70,27 @@ class CPU:
         print()
 
     def run(self):
-        """Run the CPU.
-        
+        """Run the CPU.       
         1. read mem at PC
         2. store result in local var
         3. turn into hash_tables
-
         """
-
         running = True
-
         while running:
             IR = self.ram[self.pc]
-            if IR == self.LDI:
-                self.ldi()
-            if IR == self.PRN:
-                self.prn()           
-            if IR == self.MUL:
-                self.alu("MUL", 0, 1) # argsv here?
-            if IR == self.HLT:
-                running = self.hlt()
-
+            branch_table = {
+                self.LDI: self.ldi,
+                self.PRN: self.prn,
+                # self.HLT: self.hlt,
+                self.MUL: self.mul
+                }
+            if IR in branch_table:
+                branch_table[IR]()
+            elif IR == self.HLT:
+                running = False
+            else:
+                print(f'Unknown instruction: {IR}, at address PC: {self.pc}')
+                sys.exit(1)
 
     def ram_read(self, address):
         # accept address
@@ -102,15 +103,15 @@ class CPU:
         # no return
         self.ram[address] = value
 
-    def hlt(self):
+    def hlt(self, running):
         self.pc += 1
-        return False
+        running = False
+        return running
     
     def prn(self):
         reg_id = self.ram[self.pc + 1]
         self.reg[0]
         print("Returning", self.reg[reg_id])
-
         self.pc +=2
     
     def ldi(self):
@@ -118,4 +119,6 @@ class CPU:
         value = self.ram[self.pc + 2]
         self.reg[reg_id] = value
         self.pc += 3
-        
+    
+    def mul(self):
+        self.alu("MUL", 0, 1)
