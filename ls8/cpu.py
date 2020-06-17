@@ -7,15 +7,18 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        self.ram = [0] * 256
+        self.ram = [None] * 256
         self.pc = 0
-        self.reg = [0] * 8
+        self.reg = [None] * 8
         self.running = True
         self.LDI = 0b10000010
         self.PRN = 0b01000111
         self.HLT = 0b00000001
         self.ADD = 0b10100000
+        self.SUB = 0b10100001
         self.MUL = 0b10100010
+        self.MOD = 0b10100100
+
 
     def load(self, program):
         """Load a program into memory."""
@@ -38,7 +41,9 @@ class CPU:
                 self.PRN: self.prn,
                 self.HLT: self.hlt,
                 self.ADD: self.add,
+                self.SUB: self.sub,
                 self.MUL: self.mul,
+                self.MOD: self.mod,
                 }
             if IR in branch_table:
                 branch_table[IR]()
@@ -57,13 +62,17 @@ class CPU:
             self.reg[reg_a] += self.reg[reg_b]
             self.pc += 3
             print(f"MUL at REG[{reg_a}]: {self.reg[reg_a]}")
-        #elif op == "SUB": etc
-            
+        elif op == "SUB":
+            self.reg[reg_a] -= self.reg[reg_b]
+            self.pc += 3
+            print(f"MUL at REG[{reg_a}]: {self.reg[reg_a]}")          
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
-            # print("REGISTRY:", self.reg)
             self.pc += 3
-            # print("MUL", self.reg[reg_a])
+            print(f"MUL at REG[{reg_a}]: {self.reg[reg_a]}")
+        elif op == "MOD":
+            self.reg[reg_a] /= self.reg[reg_b]
+            self.pc += 3
             print(f"MUL at REG[{reg_a}]: {self.reg[reg_a]}")
         else:
             raise Exception(f"Unsupported ALU operation: {op}")
@@ -120,6 +129,12 @@ class CPU:
 
     def add(self):
         self.alu("ADD", 0, 1)
-        
+    
+    def sub(self):
+        self.alu("SUB", 0, 1)
+
     def mul(self):
         self.alu("MUL", 0, 1)
+
+    def mod(self):
+            self.alu("MOD", 0, 1)
