@@ -179,7 +179,7 @@ Glossary:
 
 Machine code values shown in both binary and hexadecimal.
 
-### ADD
+### ADD ✅
 
 *This is an instruction handled by the ALU.*
 
@@ -260,7 +260,7 @@ Machine code:
 66 0r
 ```
 
-### DIV
+### DIV ✅
 
 *This is an instruction handled by the ALU.*
 
