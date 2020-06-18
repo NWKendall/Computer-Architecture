@@ -29,7 +29,7 @@ with open(file_name) as f:
         if line[0] != '#':
             num = int(line[0:8], 2)
             program.append(num)
-    #Displays The Program and the instructions passed
+    # Displays The Program and the instructions passed
     print(f'-----------------')
     print(f'{file_name} Instructions:')
     print(f'-----------------\n')

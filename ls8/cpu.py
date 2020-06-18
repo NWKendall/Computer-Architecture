@@ -13,8 +13,9 @@ class CPU:
         self.pc = 0
         # stack counter
         self.sp = 7
-        self.stack_start = 16
-        self.stack_end = 240
+        self.return_pc = 0
+        # self.stack_start = 16
+        # self.stack_end = 240
         # self.stacksize = "?"
         self.reg = [None] * 8
         self.running = True
@@ -28,11 +29,12 @@ class CPU:
         self.MOD = 0b10100100
         self.PUSH = 0b01000101
         self.POP = 0b01000110
+        self.CALL = 0b01010000
+        self.RET = 0b00010001
+        self.MULT2PRINT = 0b00011000
 
     def load(self, program):
         """Load a program into memory."""
-        #    index     value        provide from arg
-        # Initializing Address of Stackhead to REG
         # wipe RAM
         for address in self.ram:
             ram = 0
@@ -48,6 +50,8 @@ class CPU:
         # reset FL????
 
         # boot program
+        #    index     value        provide from arg
+        # Initializing Address of Stackhead to REG
         for address, instruction in enumerate(program):
             self.ram[address] = instruction
             address += 1
@@ -71,7 +75,9 @@ class CPU:
                 self.DIV: self.div,
                 self.MOD: self.mod,
                 self.PUSH: self.push,
-                self.POP: self.pop
+                self.POP: self.pop,
+                self.CALL: self.call,
+                self.RET: self.ret,
             }
             if IR in branch_table:
                 branch_table[IR]()
@@ -142,8 +148,8 @@ class CPU:
         self.ram[address] = value
 
     def hlt(self):
-        self.running = False
         self.pc += 1
+        self.running = False
 
     def prn(self):
         reg_id = self.ram[self.pc + 1]
@@ -159,7 +165,7 @@ class CPU:
         self.pc += 3
 
     def add(self):
-        self.alu("ADD", 0, 1)
+        self.alu("ADD", 0, 0)
 
     def sub(self):
         self.alu("SUB", 0, 1)
@@ -205,10 +211,32 @@ class CPU:
 
         # increment value (not index) of sp to point to new top of stack
         self.reg[self.sp] += 1
-        # print("REG:", self.reg)
         # print("RAM_ID:", self.ram[self.reg[7]])
         # increase counter by 2 (2 lines of instructions)
+        # print("RAM:", self.ram)
         self.pc += 2
+
+    def call(self):
+        ###### get return address
+        self.return_pc = self.pc + 2
+        
+        ##### push on stack
+        # dec val at reg[7]
+        self.reg[self.sp] -= 1
+        # storing new val in var
+        reg_var = self.reg[self.sp]
+        # setting value to ram
+        self.ram[reg_var]
+
+        ##### get address to call
+        reg_num = self.ram[self.pc +1]
+        sub_routine = self.reg[reg_num]
+
+        ##### call it
+        self.pc = sub_routine
+    
+    def ret(self):
+        self.pc = self.return_pc
 
 
 """
@@ -218,4 +246,30 @@ Todos:
     reg_write func
     specify stack params in RAM?
     Stretch goals
+
+Notes:
+    - stack only contains return address for functions/subroutines, but not that subroutines actual instructions
+    -  register used to return a value, direct or indirectly
+    - pass things in via the register
+    - Interupts = how peripherals(hardware) indicate to CPU action needs to be taken
+        - like callbacks
+        - polling: has a key been pre
+        - take PC of interrupt
+            - send to code to handle interrupt
+        - IRET = interrupt return
+            - saves all registers
+        - IV save addresses
+            - serve as pointers
+            - set PC to that value
+
+Research:
+    - Difference between JMP and CALL?
+    - Jupytr
+    - books:
+        - the design of the UNIX operating system
+        - Advanced Programming in the UNIX Environment, 3rd Editio
+
+
+Sprint:
+    - 
 """
