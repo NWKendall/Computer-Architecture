@@ -217,26 +217,24 @@ class CPU:
         self.pc += 2
 
     def call(self):
-        ###### get return address
-        self.return_pc = self.pc + 2
-        
-        ##### push on stack
-        # dec val at reg[7]
+        # Calls a subroutine at the address stored in the register
+        # 1. The address of the instruction directly after CALL is pushed onto the stack. This allows us to return to where we left off when the subroutine finishes executing.
+        return_pc = self.pc + 2
+        # Set value in the stack to the PC value we want to return to after we call the function
         self.reg[self.sp] -= 1
-        # storing new val in var
-        reg_var = self.reg[self.sp]
-        # setting value to ram
-        self.ram[reg_var]
-
-        ##### get address to call
-        reg_num = self.ram[self.pc +1]
-        sub_routine = self.reg[reg_num]
-
-        ##### call it
-        self.pc = sub_routine
+        top_of_stack_address = self.reg[self.sp]
+        self.ram[top_of_stack_address] = return_pc
+        # 2. The PC is set to the address stored in the given register. We jump to that location in RAM and execute the first instruction in the subroutine. The PC can move forward or backward from its current location.
+        subroutine_pc = self.reg[1]
+        self.pc = subroutine_pc
     
     def ret(self):
-        self.pc = self.return_pc
+        # Return from subroutine
+        # Pop the value from the top of the stack and store it in the PC
+        # print("REG: ", self.reg)
+        top_of_stack_address = self.reg[self.sp]
+        return_pc = self.ram[top_of_stack_address]
+        self.pc = return_pc
 
 
 """
