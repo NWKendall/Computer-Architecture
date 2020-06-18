@@ -32,6 +32,22 @@ class CPU:
     def load(self, program):
         """Load a program into memory."""
         #    index     value        provide from arg
+        # Initializing Address of Stackhead to REG
+        # wipe RAM
+        for address in self.ram:
+            ram = 0
+        # wipe REG
+        for reg in self.reg:
+            reg = 0
+        # reset process counter
+        self.pc = 0
+
+        # assign reg[7] = 243
+        self.reg[self.sp] = 0xF3
+
+        # reset FL????
+
+        # boot program
         for address, instruction in enumerate(program):
             self.ram[address] = instruction
             address += 1
@@ -42,8 +58,6 @@ class CPU:
         2. store result in local var
         3. turn into hash_tables
         """
-
-        self.reg[self.sp] = 0xF3
 
         while self.running is True:
             IR = self.ram[self.pc]
@@ -160,34 +174,48 @@ class CPU:
         self.alu("MOD", 0, 1)
 
     def push(self):
-        # self.reg[7] = 104 reg 0 - 8
-        self.reg[self.sp] -= 1  # ?? ram[105] = 404
-        reg_id = self.ram[self.pc + 1]
-        # value = new ram index after stack push
-        value = self.reg[reg_id]
-        top_loc = self.reg[self.sp]
-        self.ram[top_loc] = value
-        print("PC:", self.pc)
-        print("RAM:", self.ram)
-        print("REG:", self.reg)
+        # decrements the VALUE stored at reg[7], which is the address in Stack, "new head"
+        self.reg[self.sp] -= 1
+        # storing value of next instruction
+        reg_val = self.ram_read(self.pc + 1)
+        # reg_val = self.ram[self.pc + 1]
+        # writing the saved value from ram into the reg
+        value = self.reg[reg_val]
+        # saving the new head (stack address) into a variable
+        top_loc = self.reg[self.sp] 
+        # linking the value/address in REG[7] to loc in RAM
+        self.ram_write(value, top_loc)
+        # self.ram[top_loc] = value
         # print("PUSH", "Reg_LOC:", self.sp , "Ram_Loc:",  reg_id, "Val:", self.ram[top_loc])
+        # incrementing PC count by 2 (1 line for insturction, 1 line for reg[address])
         self.pc += 2
 
     def pop(self):
-        # OLD Head
-        top_loc = self.reg[self.sp] #244
-        # lets get the register address
+        # getting addrees of old stack head that will be changed from REG (always R[7])
+        # print("POP!")
+        top_loc = self.reg[self.sp]
+        # print("TOP_LOC:", top_loc)
+        
+        # get the index of new stack head from RAM
+        stack_index = self.ram[self.pc + 1]
+        # print("stack_index:", stack_index)
 
-        # NEW HEAD
-        reg_id = self.ram[self.pc + 1]
         # overwrite our reg address with the value of our memory address we are looking at
-        self.reg[reg_id] = self.ram[top_loc]
+        self.reg[stack_index] = self.ram[top_loc]
 
-        self.reg[self.sp] += 1 #243
+        # increment value (not index) of sp to point to new top of stack
+        self.reg[self.sp] += 1
+        # print("REG:", self.reg)
+        # print("RAM_ID:", self.ram[self.reg[7]])
+        # increase counter by 2 (2 lines of instructions)
         self.pc += 2
 
 
 """
-On boot = R7 set to 0xF4
-2. initializing
+Todos:
+    Instructions for implementing each day?
+    reg_read func
+    reg_write func
+    specify stack params in RAM?
+    Stretch goals
 """
